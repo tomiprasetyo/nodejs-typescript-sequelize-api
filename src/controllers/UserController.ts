@@ -29,4 +29,72 @@ const Register = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-export default { Register };
+const Login = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(401)
+        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+    }
+
+    const matched = await PasswordHelper.PasswordCompare(
+      password,
+      user.password
+    );
+
+    if (!matched) {
+      return res
+        .status(401)
+        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+    }
+
+    const dataUser = {
+      name: user.name,
+      email: user.email,
+      roleId: user.roleId,
+      verified: user.verified,
+      active: user.active,
+    };
+
+    // generate token
+    const token = Helper.GenerateToken(dataUser);
+
+    // refresh token
+    const refreshToken = Helper.RefreshToken(dataUser);
+
+    // update
+    user.accessToken = refreshToken;
+    await user.save();
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    const responseUser = {
+      name: user.name,
+      email: user.email,
+      roleId: user.roleId,
+      verified: user.verified,
+      active: user.active,
+      token: token,
+    };
+
+    return res
+      .status(201)
+      .send(Helper.ResponseData(200, "Success Login", null, responseUser));
+  } catch (error) {
+    return res
+      .status(500)
+      .send(Helper.ResponseData(500, "Bad Request", error, null));
+  }
+};
+
+export default { Register, Login };
