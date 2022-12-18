@@ -36,7 +36,7 @@ const RegisterValidation = async (
 
     const user = await User.findOne({
       where: {
-        email: email,
+        email: data.email,
       },
     });
 

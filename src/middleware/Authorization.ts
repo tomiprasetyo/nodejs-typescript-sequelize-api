@@ -12,6 +12,14 @@ const Authenticated = (req: Request, res: Response, next: NextFunction) => {
         .send(Helper.ResponseData(401, "Unauthorized", null, null));
     }
     const result = Helper.ExtractToken(token!);
+
+    /* Saya ga tau kenapa kalo kode ini dipakai tidak bisa get role pada saat sudah login */
+
+    // if (result) {
+    //   return res
+    //     .status(401)
+    //     .send(Helper.ResponseData(401, "Unauthorized", null, null));
+    // }
     next();
   } catch (error: any) {
     return res

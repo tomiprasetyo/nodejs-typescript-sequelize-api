@@ -61,7 +61,7 @@ const CreateRole = async (req: Request, res: Response): Promise<Response> => {
     }
 
     return res.status(500).send({
-      status: 50,
+      status: 500,
       message: "Internal Server Error",
       errors: error,
     });
@@ -107,7 +107,7 @@ const UpdateRole = async (req: Request, res: Response): Promise<Response> => {
     }
 
     return res.status(500).send({
-      status: 50,
+      status: 500,
       message: "Internal Server Error",
       errors: error,
     });
@@ -149,7 +149,7 @@ const DeleteRole = async (req: Request, res: Response): Promise<Response> => {
     }
 
     return res.status(500).send({
-      status: 50,
+      status: 500,
       message: "Internal Server Error",
       errors: error,
     });
@@ -189,7 +189,7 @@ const GetRoleById = async (req: Request, res: Response): Promise<Response> => {
     }
 
     return res.status(500).send({
-      status: 50,
+      status: 500,
       message: "Internal Server Error",
       errors: error,
     });

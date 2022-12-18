@@ -67,7 +67,7 @@ const Login = async (req: Request, res: Response): Promise<Response> => {
     const token = Helper.GenerateToken(dataUser);
 
     // refresh token
-    const refreshToken = Helper.RefreshToken(dataUser);
+    const refreshToken = Helper.GenerateRefreshToken(dataUser);
 
     // update
     user.accessToken = refreshToken;
@@ -88,7 +88,7 @@ const Login = async (req: Request, res: Response): Promise<Response> => {
     };
 
     return res
-      .status(201)
+      .status(200)
       .send(Helper.ResponseData(200, "Success Login", null, responseUser));
   } catch (error) {
     return res
@@ -97,4 +97,50 @@ const Login = async (req: Request, res: Response): Promise<Response> => {
   }
 };
 
-export default { Register, Login };
+const RefreshToken = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!refreshToken) {
+      return res
+        .status(401)
+        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+    }
+
+    const decodedUser = Helper.ExtractRefreshToken(refreshToken);
+    console.log(decodedUser);
+
+    if (!decodedUser) {
+      return res
+        .status(401)
+        .send(Helper.ResponseData(401, "Unauthorized", null, null));
+    }
+
+    const token = Helper.GenerateToken({
+      name: decodedUser.name,
+      email: decodedUser.email,
+      roleId: decodedUser.roleId,
+      verified: decodedUser.verified,
+      active: decodedUser.active,
+    });
+
+    const resultUser = {
+      name: decodedUser.name,
+      email: decodedUser.email,
+      roleId: decodedUser.roleId,
+      verified: decodedUser.verified,
+      active: decodedUser.active,
+      token: token,
+    };
+
+    return res
+      .status(200)
+      .send(Helper.ResponseData(200, "OK", null, resultUser));
+  } catch (error) {
+    return res
+      .status(500)
+      .send(Helper.ResponseData(500, "Bad Request", null, null));
+  }
+};
+
+export default { Register, Login, RefreshToken };

@@ -20,7 +20,7 @@ const ResponseData = (
   if (error != null && error instanceof Error) {
     const response = {
       status: status,
-      message: message,
+      message: error.message,
       errors: error,
       data: null,
     };
@@ -41,14 +41,14 @@ const ResponseData = (
 // 10 minute
 const GenerateToken = (data: any): string => {
   const token = JWT.sign(data, process.env.JWT_TOKEN as string, {
-    expiresIn: "10m",
+    expiresIn: "20s",
   });
 
   return token;
 };
 
 // 1 day
-const RefreshToken = (data: any): string => {
+const GenerateRefreshToken = (data: any): string => {
   const token = JWT.sign(data, process.env.REFRESH_TOKEN as string, {
     expiresIn: "1d",
   });
@@ -100,7 +100,7 @@ const ExtractRefreshToken = (token: string): UserData | null => {
 export default {
   ResponseData,
   GenerateToken,
-  RefreshToken,
+  GenerateRefreshToken,
   ExtractToken,
   ExtractRefreshToken,
 };
